@@ -1,0 +1,1 @@
+"""Reference inventory data."""
