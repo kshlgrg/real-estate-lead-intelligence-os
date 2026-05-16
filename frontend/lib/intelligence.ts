@@ -147,21 +147,21 @@ export const emptyDigest: Digest = {
 export async function fetchCompetitors(): Promise<Competitor[]> {
   if (useBundledDemo) return demoCompetitors;
   return apiGet<Competitor[]>("/api/competitors")
-    .then((items) => items.length ? items : demoCompetitors)
+    .then((items) => items.length >= demoCompetitors.length ? items : demoCompetitors)
     .catch(() => demoCompetitors);
 }
 
 export async function fetchContent(): Promise<ContentItem[]> {
   if (useBundledDemo) return demoContent;
   return apiGet<ContentItem[]>("/api/content")
-    .then((items) => items.length ? items : demoContent)
+    .then((items) => items.length >= demoContent.length ? items : demoContent)
     .catch(() => demoContent);
 }
 
 export async function fetchAnalytics(): Promise<Analytics> {
   if (useBundledDemo) return demoAnalytics;
   return apiGet<Analytics>("/api/analytics")
-    .then((item) => item.total_items ? item : demoAnalytics)
+    .then((item) => item.total_items >= demoAnalytics.total_items ? item : demoAnalytics)
     .catch(() => demoAnalytics);
 }
 
