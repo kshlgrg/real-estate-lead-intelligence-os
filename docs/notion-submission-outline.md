@@ -10,11 +10,11 @@ This submission explores AI-assisted marketing automation beyond simple workflow
 
 ## Links
 
-- GitHub repo:
-- Loom walkthrough:
-- Hosted frontend:
-- Backend API:
-- n8n workflow exports:
+- GitHub repo: https://github.com/kshlgrg/real-estate-lead-intelligence-os
+- Loom walkthrough: add after recording
+- Hosted frontend: https://marketing-automation-systems.vercel.app
+- Backend API health: https://marketing-automation-systems.vercel.app/_/backend/api/health
+- n8n workflow exports: https://github.com/kshlgrg/real-estate-lead-intelligence-os/tree/main/workflows
 
 ## System 1: Real Estate Lead Qualification
 

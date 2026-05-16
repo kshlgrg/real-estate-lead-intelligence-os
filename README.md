@@ -108,7 +108,9 @@ npm run build
 Send these links in the email:
 
 - Main landing document: this README or a Notion page copied from [`docs/notion-submission-outline.md`](./docs/notion-submission-outline.md)
-- Technical repo: GitHub repository
+- Technical repo: <https://github.com/kshlgrg/real-estate-lead-intelligence-os>
+- Live demo: <https://marketing-automation-systems.vercel.app>
+- Public backend health check: <https://marketing-automation-systems.vercel.app/_/backend/api/health>
 - Demo video: Loom, following [`docs/loom-walkthrough.md`](./docs/loom-walkthrough.md)
 - Screenshots: [`screenshots/`](./screenshots)
 - n8n exports: [`workflows/`](./workflows)

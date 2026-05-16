@@ -1,24 +1,33 @@
-# Submission Email Template
+# Final Submission Email
 
-Subject: Marketing Automation Internship Assignment - AI Marketing Automation Systems
+Subject: Marketing Automation Internship Assignment Submission - Internshala
 
 Hi Funnel Truffle team,
 
-Thanks for the assignment. I built the submission as three small marketing automation systems instead of choosing only one prompt:
+I applied for the Marketing Automation Internship through Internshala, and this is my assignment submission.
 
-- Real estate lead qualification
-- Competitor content monitoring
-- Newsletter ideation engine
+The assignment said to pick one problem. I wanted to solve each one because all three test different parts of the same job, so I built and documented systems for:
 
-Main links:
+1. Real estate lead qualification
+2. Competitor content monitoring
+3. Newsletter ideation
 
-- Landing document / README: [insert GitHub README or Notion link]
-- GitHub repository: [insert repo link]
-- Loom walkthrough: [insert Loom link]
-- Screenshots: [insert screenshots folder link]
-- n8n workflow JSON exports: [insert workflows folder link]
+I kept everything easy to check:
 
-I kept the demo runnable without paid AI keys, so the local intelligence layer is deterministic. In the docs I also explain where I would use structured LLM calls in production, what would break, and what I would build next.
+- Main GitHub repo: https://github.com/kshlgrg/real-estate-lead-intelligence-os
+- Live demo: https://marketing-automation-systems.vercel.app
+- Backend health check: https://marketing-automation-systems.vercel.app/_/backend/api/health
+- README / control center: https://github.com/kshlgrg/real-estate-lead-intelligence-os#readme
+- n8n workflow exports: https://github.com/kshlgrg/real-estate-lead-intelligence-os/tree/main/workflows
+- Problem docs: https://github.com/kshlgrg/real-estate-lead-intelligence-os/tree/main/docs
+- Screenshots: https://github.com/kshlgrg/real-estate-lead-intelligence-os/tree/main/screenshots
+- Loom walkthrough: [add Loom link here after recording]
+
+One thing I noticed in the assignment was the warning about people pasting from ChatGPT. I get why you wrote that. I use AI tools too, but I think the real skill is using them properly: asking better questions, checking the output, building the system, testing it, and being honest about what would break.
+
+If there is even a small doubt about whether this is just AI-written homework, the GitHub repo should clear it. It has the backend APIs, tests, n8n workflow JSONs, architecture docs, cost breakdown, edge cases, production limitations, screenshots, and demo setup.
+
+I wanted this to feel like how I would actually approach marketing automation work: not just moving data between tools, but deciding what matters, what should be scored, what should be routed, what needs human review, and what should happen next.
 
 Best,  
 Kushal
