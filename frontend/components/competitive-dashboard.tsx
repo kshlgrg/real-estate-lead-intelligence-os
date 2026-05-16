@@ -4,10 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   Bot,
+  Building2,
   CheckCircle2,
+  ExternalLink,
   FileText,
   Flame,
+  Github,
   Globe2,
+  Home,
   Inbox,
   LayoutDashboard,
   Lightbulb,
@@ -15,6 +19,7 @@ import {
   ListFilter,
   Mail,
   Network,
+  Newspaper,
   Radar,
   RadioTower,
   Search,
@@ -54,12 +59,47 @@ const sourceLabels: Record<SourceType, string> = {
 };
 
 const navItems = [
-  { label: "Intelligence Feed", icon: Inbox, active: true },
-  { label: "Strategic Signals", icon: Radar },
-  { label: "Trend Clusters", icon: Network },
-  { label: "Digests", icon: Mail },
-  { label: "Automations", icon: RadioTower },
-  { label: "Settings", icon: LayoutDashboard }
+  { label: "Submission Systems", icon: LayoutDashboard, href: "#submission-systems", active: true },
+  { label: "Intelligence Feed", icon: Inbox, href: "#intelligence-feed" },
+  { label: "Strategic Signals", icon: Radar, href: "#strategic-signals" },
+  { label: "Digests", icon: Mail, href: "#digest" },
+  { label: "Automations", icon: RadioTower, href: "#automations" }
+];
+
+const repoUrl = "https://github.com/kshlgrg/real-estate-lead-intelligence-os";
+
+const submissionLinks = [
+  { label: "GitHub repo", href: repoUrl, icon: Github },
+  { label: "Problem docs", href: `${repoUrl}/tree/main/docs`, icon: FileText },
+  { label: "n8n workflows", href: `${repoUrl}/tree/main/workflows`, icon: RadioTower },
+  { label: "Screenshots", href: `${repoUrl}/tree/main/screenshots`, icon: ExternalLink }
+];
+
+const systems = [
+  {
+    label: "Problem A",
+    title: "Real estate lead qualification",
+    icon: Home,
+    detail: "Webhook intake, validation, enrichment, 1-10 scoring, property matching, and sales routing.",
+    doc: `${repoUrl}/blob/main/docs/problem-a-real-estate-lead-qualification.md`,
+    metric: "Hot lead routing + review gates"
+  },
+  {
+    label: "Problem B",
+    title: "Competitor content monitoring",
+    icon: Building2,
+    detail: "Scheduled monitoring, dedupe, topic classification, strategic signals, and daily digest.",
+    doc: `${repoUrl}/blob/main/docs/problem-b-competitor-content-monitoring.md`,
+    metric: "Live dashboard below"
+  },
+  {
+    label: "Problem C",
+    title: "Newsletter ideation engine",
+    icon: Newspaper,
+    detail: "Trend ingestion, theme clustering, novelty scoring, five angles, and a source-grounded intro draft.",
+    doc: `${repoUrl}/blob/main/docs/problem-c-newsletter-ideation-engine.md`,
+    metric: "Weekly editor brief"
+  }
 ];
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -122,8 +162,9 @@ function Sidebar() {
       </div>
       <nav className="mt-8 space-y-1">
         {navItems.map((item) => (
-          <button
+          <a
             key={item.label}
+            href={item.href}
             className={cx(
               "flex h-10 w-full items-center gap-3 rounded-md px-3 text-sm transition",
               item.active ? "bg-white text-navy" : "text-slate-300 hover:bg-white/10 hover:text-white"
@@ -131,7 +172,7 @@ function Sidebar() {
           >
             <item.icon size={17} strokeWidth={2} />
             {item.label}
-          </button>
+          </a>
         ))}
       </nav>
       <div className="mt-8 rounded-lg border border-white/10 bg-white/5 p-4">
@@ -144,6 +185,76 @@ function Sidebar() {
         </p>
       </div>
     </aside>
+  );
+}
+
+function SubmissionControlCenter({ activeSystem, setActiveSystem }: { activeSystem: number; setActiveSystem: (value: number) => void }) {
+  const system = systems[activeSystem];
+  return (
+    <section id="submission-systems" className="rounded-lg border border-line bg-white p-4 shadow-panel">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase text-slate">Submission control center</p>
+          <h2 className="mt-1 text-xl font-semibold text-ink">Three assignment problems, one reviewable package</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate">
+            The live page previews the competitor-monitoring operator dashboard. The buttons below jump to the repo evidence for all three systems: docs, n8n exports, screenshots, API commands, tests, and production notes.
+          </p>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2 xl:min-w-[460px]">
+          {submissionLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-10 items-center justify-between rounded-lg border border-line bg-mist px-3 text-sm font-semibold text-ink transition hover:border-teal hover:bg-teal-50"
+            >
+              <span className="flex items-center gap-2"><link.icon size={16} />{link.label}</span>
+              <ExternalLink size={14} />
+            </a>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 grid gap-3 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="grid gap-2">
+          {systems.map((item, index) => (
+            <button
+              key={item.title}
+              onClick={() => setActiveSystem(index)}
+              className={cx(
+                "flex min-h-16 items-center gap-3 rounded-lg border px-3 py-3 text-left transition",
+                activeSystem === index ? "border-teal bg-teal-50 text-ink" : "border-line bg-white text-slate hover:bg-mist"
+              )}
+            >
+              <item.icon className={activeSystem === index ? "text-teal" : "text-slate"} size={18} />
+              <span>
+                <span className="block text-xs font-semibold uppercase">{item.label}</span>
+                <span className="block text-sm font-semibold">{item.title}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+        <div className="rounded-lg border border-line bg-mist p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-slate">{system.label}</p>
+              <h3 className="mt-1 text-lg font-semibold text-ink">{system.title}</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate">{system.detail}</p>
+              <p className="mt-3 text-sm font-semibold text-teal">{system.metric}</p>
+            </div>
+            <a
+              href={system.doc}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-navy px-3 text-sm font-semibold text-white transition hover:bg-navy/90"
+            >
+              Open writeup
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -323,6 +434,8 @@ export function CompetitiveDashboard() {
   const [source, setSource] = useState("all");
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [activeSystem, setActiveSystem] = useState(0);
+  const [alertPreview, setAlertPreview] = useState(false);
 
   useEffect(() => {
     Promise.all([fetchContent(), fetchAnalytics(), fetchDigest()])
@@ -353,8 +466,8 @@ export function CompetitiveDashboard() {
           <header className="sticky top-0 z-20 border-b border-line bg-mist/95 px-4 py-4 backdrop-blur md:px-6">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-ink">AI Competitive Intelligence Platform</h1>
-                <p className="text-sm text-slate">Source discovery, deduplication, strategic analysis, priorities, and executive digests.</p>
+                <h1 className="text-2xl font-semibold text-ink">AI Marketing Automation Systems</h1>
+                <p className="text-sm text-slate">Lead qualification, competitor monitoring, and newsletter ideation built as reviewable automation systems.</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <label className="flex h-10 min-w-[250px] items-center gap-2 rounded-lg border border-line bg-white px-3 text-sm text-slate">
@@ -368,7 +481,7 @@ export function CompetitiveDashboard() {
                     {Object.entries(sourceLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
-                <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-white text-ink" aria-label="Alerts">
+                <button onClick={() => setAlertPreview((value) => !value)} className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-white text-ink transition hover:border-teal hover:bg-teal-50" aria-label="Preview alert">
                   <Bell size={17} />
                 </button>
               </div>
@@ -376,6 +489,12 @@ export function CompetitiveDashboard() {
           </header>
           <div className="space-y-4 p-4 md:p-6">
             {error ? <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">Backend unavailable: {error}</div> : null}
+            <SubmissionControlCenter activeSystem={activeSystem} setActiveSystem={setActiveSystem} />
+            {alertPreview ? (
+              <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-ink">
+                <span className="font-semibold">Alert preview:</span> High-priority competitor signals would be sent to Slack/email after the n8n workflow receives a score above the configured threshold.
+              </div>
+            ) : null}
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <KpiCard label="Competitors" value={analytics.monitored_competitors.toString()} detail="Tracked companies in intelligence memory" icon={UsersRound} tone="navy" />
               <KpiCard label="Analyzed Items" value={analytics.total_items.toString()} detail="Deduplicated monitored content" icon={FileText} tone="teal" />
@@ -399,11 +518,13 @@ export function CompetitiveDashboard() {
                 </div>
               </section>
             </div>
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
+            <div id="intelligence-feed" className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
               <div className="min-w-0 space-y-4">
                 <ContentFeed items={filtered} selected={selected} setSelected={setSelected} />
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <DigestPanel digest={digest} />
+                  <div id="digest">
+                    <DigestPanel digest={digest} />
+                  </div>
                   <section className="rounded-lg border border-line bg-white p-4 shadow-panel">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="text-teal" size={18} />
@@ -421,8 +542,10 @@ export function CompetitiveDashboard() {
                 </div>
               </div>
               <div className="space-y-4">
-                <DetailPanel item={selected} />
-                <section className="rounded-lg border border-line bg-white p-4 shadow-panel">
+                <div id="strategic-signals">
+                  <DetailPanel item={selected} />
+                </div>
+                <section id="automations" className="rounded-lg border border-line bg-white p-4 shadow-panel">
                   <div className="flex items-center gap-2">
                     <Globe2 size={18} className="text-teal" />
                     <h2 className="text-sm font-semibold text-ink">Delivery Channels</h2>

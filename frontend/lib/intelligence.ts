@@ -102,7 +102,14 @@ export type IngestPayload = {
   author?: string;
 };
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8001";
+const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  (typeof window !== "undefined" ? `${window.location.origin}/_/backend` : "http://127.0.0.1:8001");
+
+const useBundledDemo =
+  !process.env.NEXT_PUBLIC_API_BASE_URL &&
+  typeof window !== "undefined" &&
+  window.location.hostname === "localhost";
 
 export const emptyAnalytics: Analytics = {
   monitored_competitors: 0,
@@ -138,19 +145,31 @@ export const emptyDigest: Digest = {
 };
 
 export async function fetchCompetitors(): Promise<Competitor[]> {
-  return apiGet<Competitor[]>("/api/competitors").catch(() => demoCompetitors);
+  if (useBundledDemo) return demoCompetitors;
+  return apiGet<Competitor[]>("/api/competitors")
+    .then((items) => items.length ? items : demoCompetitors)
+    .catch(() => demoCompetitors);
 }
 
 export async function fetchContent(): Promise<ContentItem[]> {
-  return apiGet<ContentItem[]>("/api/content").catch(() => demoContent);
+  if (useBundledDemo) return demoContent;
+  return apiGet<ContentItem[]>("/api/content")
+    .then((items) => items.length ? items : demoContent)
+    .catch(() => demoContent);
 }
 
 export async function fetchAnalytics(): Promise<Analytics> {
-  return apiGet<Analytics>("/api/analytics").catch(() => demoAnalytics);
+  if (useBundledDemo) return demoAnalytics;
+  return apiGet<Analytics>("/api/analytics")
+    .then((item) => item.total_items ? item : demoAnalytics)
+    .catch(() => demoAnalytics);
 }
 
 export async function fetchDigest(): Promise<Digest> {
-  return apiGet<Digest>("/api/digest?days=30").catch(() => demoDigest);
+  if (useBundledDemo) return demoDigest;
+  return apiGet<Digest>("/api/digest?days=30")
+    .then((item) => item.items_analyzed ? item : demoDigest)
+    .catch(() => demoDigest);
 }
 
 export async function createCompetitor(competitor: Competitor): Promise<Competitor> {

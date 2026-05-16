@@ -102,7 +102,9 @@ type ApiAnalyzedLead = {
   };
 };
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8001";
+const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  (typeof window !== "undefined" ? `${window.location.origin}/_/backend` : "http://127.0.0.1:8001");
 
 export const emptyAnalytics: Analytics = {
   total_leads: 0,
