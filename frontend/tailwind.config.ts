@@ -1,7 +1,14 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/lib/**/*.{js,ts,jsx,tsx,mdx}"
+  ],
   theme: {
     extend: {
       colors: {
@@ -10,6 +17,7 @@ const config: Config = {
         mist: "#f5f7f8",
         line: "#dde4e7",
         teal: "#0d9488",
+        coral: "#e2564a",
         amber: "#d97706",
         navy: "#13283b"
       },

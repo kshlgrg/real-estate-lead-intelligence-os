@@ -137,7 +137,7 @@ export async function fetchLeads(): Promise<Lead[]> {
 }
 
 export async function fetchAnalytics(): Promise<Analytics> {
-  const response = await fetch(`${apiBaseUrl}/api/analytics`, { cache: "no-store" });
+  const response = await fetch(`${apiBaseUrl}/api/leads/analytics`, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Analytics API returned ${response.status}`);
   }

@@ -1,0 +1,201 @@
+{
+  "name": "Problem C - Newsletter Ideation Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [1],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "monday-trigger",
+      "name": "Monday Morning Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?query=ai%20automation&tags=story"
+      },
+      "id": "fetch-hn",
+      "name": "Fetch Hacker News Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [240, -120]
+    },
+    {
+      "parameters": {
+        "url": "https://example.com/rss/ai-startups.xml"
+      },
+      "id": "fetch-rss",
+      "name": "Fetch RSS Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [240, 120]
+    },
+    {
+      "parameters": {},
+      "id": "merge-sources",
+      "name": "Merge Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "audience",
+              "value": "={{ { profile_id: 'weekly-ai-operators', name: 'AI operators, founders, and strategists', segments: ['founder', 'operator'], interests: ['ai agents', 'automation', 'operations', 'workflow', 'startups'], avoided_topics: ['generic productivity tips'], tone: 'analytical' } }}",
+              "type": "object"
+            },
+            {
+              "name": "stories",
+              "value": "={{$json.stories || [{ story_id: $execution.id + '-1', source: 'manual', url: 'https://example.com/story', title: 'AI agents move from demos into operations workflows', body: 'Operators are deploying AI agents for support triage, procurement, and workflow orchestration while discovering that broken processes need redesign before automation scales.', published_at: $now.toISO(), engagement: 72, credibility: 0.78 }]}}",
+              "type": "array"
+            },
+            {
+              "name": "memory",
+              "value": "={{[]}}",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "id": "build-plan-request",
+      "name": "Build Plan Request",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8001/api/newsletter-plan",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}"
+      },
+      "id": "generate-plan",
+      "name": "Generate Newsletter Plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1040, 0]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "REPLACE_WITH_NOTION_DATABASE_ID",
+        "title": "={{$json.draft_intro.headline || 'Newsletter idea'}}"
+      },
+      "id": "notion-draft",
+      "name": "Create Notion Draft",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [1300, -120]
+    },
+    {
+      "parameters": {
+        "url": "https://hooks.slack.com/services/REPLACE_ME",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"text\":\"Newsletter plan ready: {{$json.draft_intro.headline}}\"}"
+      },
+      "id": "notify-editor",
+      "name": "Notify Editor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1300, 120]
+    }
+  ],
+  "connections": {
+    "Monday Morning Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Hacker News Trends",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch RSS Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Hacker News Trends": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch RSS Trends": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Sources": {
+      "main": [
+        [
+          {
+            "node": "Build Plan Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Plan Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Newsletter Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Newsletter Plan": {
+      "main": [
+        [
+          {
+            "node": "Create Notion Draft",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Editor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

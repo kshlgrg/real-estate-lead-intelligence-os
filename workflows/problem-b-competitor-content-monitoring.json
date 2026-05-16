@@ -1,0 +1,246 @@
+{
+  "name": "Problem B - Competitor Content Monitoring",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "schedule",
+      "name": "Every 4 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8001/api/competitors"
+      },
+      "id": "get-competitors",
+      "name": "Get Competitors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-competitors",
+      "name": "Split Competitors",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.website || 'https://example.com/rss'}}",
+        "options": {}
+      },
+      "id": "fetch-source",
+      "name": "Fetch Blog Or RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [760, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "content_id",
+              "value": "={{$execution.id + '-' + $itemIndex}}",
+              "type": "string"
+            },
+            {
+              "name": "competitor_id",
+              "value": "={{$('Split Competitors').item.json.competitor_id}}",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "value": "blog",
+              "type": "string"
+            },
+            {
+              "name": "url",
+              "value": "={{$json.url || $('Split Competitors').item.json.website}}",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "value": "={{$json.title || 'New competitor update'}}",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "value": "={{$json.body || $json.text || 'Fetched source content goes here after parsing.'}}",
+              "type": "string"
+            },
+            {
+              "name": "published_at",
+              "value": "={{$json.published_at || $now.toISO()}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "normalize-content",
+      "name": "Normalize Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [1020, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8001/api/content",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={{$json}}"
+      },
+      "id": "analyze-content",
+      "name": "Analyze And Store",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1280, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.analysis.priority}}",
+              "operation": "largerEqual",
+              "value2": 8
+            }
+          ]
+        }
+      },
+      "id": "priority-check",
+      "name": "High Priority?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1540, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://hooks.slack.com/services/REPLACE_ME",
+        "sendBody": true,
+        "contentType": "json",
+        "jsonBody": "={\"text\":\"Competitive signal: {{$json.competitor_name}} - {{$json.content.title}}. Priority {{$json.analysis.priority}}. {{$json.analysis.recommended_action}}\"}"
+      },
+      "id": "slack-alert",
+      "name": "Slack Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1800, -120]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8001/api/digest"
+      },
+      "id": "build-digest",
+      "name": "Build Daily Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1800, 120]
+    }
+  ],
+  "connections": {
+    "Every 4 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitors": {
+      "main": [
+        [
+          {
+            "node": "Split Competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Competitors": {
+      "main": [
+        [
+          {
+            "node": "Fetch Blog Or RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Blog Or RSS": {
+      "main": [
+        [
+          {
+            "node": "Normalize Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Content": {
+      "main": [
+        [
+          {
+            "node": "Analyze And Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze And Store": {
+      "main": [
+        [
+          {
+            "node": "High Priority?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Priority?": {
+      "main": [
+        [
+          {
+            "node": "Slack Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Daily Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
